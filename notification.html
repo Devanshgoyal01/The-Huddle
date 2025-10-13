@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications • The Huddle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --light-bg: #f0f2f5; --dark-text: #2c3e50; --card-bg: #ffffff; --accent1: #005c97; --accent2: #00c9a7; --border-color: #e5e7eb; --muted: #8899a6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--light-bg); padding: 20px; }
+        .header { display: flex; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
+        .back-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin-right: 16px; cursor: pointer; }
+        .page-title { font-size: 1.8rem; }
+        .notification-list { max-width: 700px; margin: 0 auto; }
+        .notification-card { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+        .notification-card.unread { border-left: 4px solid var(--accent2); background: #f8fdff; }
+        .notification-header { display: flex; align-items: center; margin-bottom: 12px; }
+        .notification-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent1); display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px; }
+        .notification-time { font-size: 0.85rem; color: var(--muted); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="back-btn" id="backBtn" onclick="window.history.back();"><i class="fas fa-arrow-left"></i></div>
+        <h1 class="page-title">Notifications</h1>
+    </div>
+    <div class="notification-list" id="notificationList">
+        <div class="empty-state"><i class="fas fa-bell-slash" style="font-size: 3rem; margin-bottom: 1rem;"></i><h3>No new notifications</h3><p>You're all caught up!</p></div>
+    </div>
+</body>
+</html>

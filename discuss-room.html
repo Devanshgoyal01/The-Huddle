@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discuss Room — The Huddle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark-bg-primary: #2c2f33; --dark-bg-secondary: #23272a; --dark-bg-tertiary: #1e1f22; --text-normal: #ffffff; --text-muted: #99aab5; --accent-color: #5865f2; --red-text: #ed4245; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--dark-bg-primary); color: var(--text-normal); height: 100vh; display: flex; overflow: hidden; }
+        .layout { display: flex; width: 100%; height: 100%; }
+        .nav-panel { width: 240px; background: var(--dark-bg-secondary); display: flex; flex-direction: column; }
+        .chat-area { flex-grow: 1; display: flex; flex-direction: column; }
+        .team-header { padding: 16px; border-bottom: 1px solid var(--dark-bg-tertiary); display: flex; justify-content: space-between; align-items: center; }
+        .team-header h1 { font-size: 1rem; }
+        .action-icon { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
+        .action-icon:hover { color: var(--red-text); }
+        .nav-list { padding: 16px 8px; }
+        .nav-category { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); }
+        .nav-item.active { background: rgba(88, 101, 242, 0.2); color: white; }
+        .chat-header { height: 50px; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--dark-bg-tertiary); }
+        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        .message { display: flex; gap: 16px; margin-bottom: 16px; }
+        .message-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-color); flex-shrink: 0; }
+        .author { font-weight: 600; margin-right: 8px; }
+        .timestamp { font-size: 0.75rem; color: var(--text-muted); }
+        .chat-input-area { padding: 20px; }
+        .input-wrapper { background: var(--dark-bg-secondary); border-radius: 8px; display: flex; }
+        #messageInput { flex-grow: 1; height: 44px; background: transparent; border: none; color: var(--text-normal); font-size: 1rem; outline: none; padding: 0 12px; }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <nav class="nav-panel">
+            <header class="team-header">
+                <h1 id="teamNameDisplay">Your Team</h1>
+                <div>
+                    <button id="homeBtn" class="action-icon" title="Back to Main Page"><i class="fas fa-arrow-left"></i></button>
+                    <button id="leaveTeamBtn" class="action-icon" title="Leave Team"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </header>
+            <div class="nav-list">
+                <div class="nav-category">Text Channels</div>
+                <div class="nav-item active"><i class="fas fa-comments"></i> Team Chat</div>
+            </div>
+        </nav>
+        <main class="chat-area">
+            <header class="chat-header"># Team Chat</header>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <input type="text" id="messageInput" placeholder="Message in Team Chat" autocomplete="off">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const teamData = JSON.parse(localStorage.getItem('currentTeam'));
+            // This is a protected page; redirect if user has no team.
+            if (!teamData) {
+                alert("You are not part of a team. Redirecting...");
+                window.location.href = 'mainpage.html';
+                return;
+            }
+
+            document.getElementById('teamNameDisplay').textContent = teamData.teamName || 'Your Team';
+
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+
+            function addMessage(author, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.innerHTML = `
+                    <div class="message-avatar"></div>
+                    <div>
+                        <div>
+                            <span class="author">${author}</span>
+                            <span class="timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div>${content}</div>
+                    </div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && messageInput.value.trim()) {
+                    addMessage('You', messageInput.value.trim());
+                    messageInput.value = '';
+                }
+            });
+
+            document.getElementById('homeBtn').addEventListener('click', () => {
+                window.location.href = 'mainpage.html';
+            });
+            
+            document.getElementById('leaveTeamBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to leave this team? This action cannot be undone.')) {
+                    // Leaving a team is a client-side action in this app version
+                    localStorage.removeItem('currentTeam');
+                    alert('You have left the team.');
+                    window.location.href = 'mainpage.html';
+                }
+            });
+
+            addMessage('Huddle Bot', `Welcome to the chat for ${teamData.teamName}!`);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Team — The Huddle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --light-bg: #f0f2f5;
+            --dark-text: #2c3e50;
+            --card-bg: #ffffff;
+            --accent1: #005c97;
+            --accent2: #00c9a7;
+            --shadow-color: rgba(0, 92, 151, 0.1);
+            --border-color: #e5e7eb;
+            --muted: #8899a6;
+            --red-text: #ef4444;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-bg);
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Reused Styles for Sidebar/Layout from mainpage.html */
+        .sidebar { width: 72px; background: var(--card-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 28px 0; z-index: 10; position: fixed; height: 100vh; box-shadow: 5px 0 20px var(--shadow-color); transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .sidebar:hover { width: 220px; background: linear-gradient(180deg, var(--dark-text) 0%, var(--dark-text) 100%); box-shadow: 10px 0 30px rgba(0,0,0,0.2); }
+        .your-avatar { position: relative; width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--accent1), var(--accent2)); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; box-shadow: 0 6px 20px rgba(0, 92, 151, 0.4); cursor: pointer; overflow: hidden; flex-shrink: 0; }
+        .your-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .your-initials { font-size: 24px; font-weight: 700; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .sidebar-nav { width: 100%; }
+        .sidebar-item { position: relative; display: flex; align-items: center; width: 100%; height: 52px; cursor: pointer; margin: 8px 0; padding: 0 26px; overflow: hidden; z-index: 1; }
+        .sidebar:hover .sidebar-item { padding: 0 20px; }
+        .sidebar-item i { font-size: 20px; color: var(--muted); flex-shrink: 0; min-width: 20px; transition: color 0.4s ease, transform 0.3s ease; }
+        .sidebar:hover .sidebar-item i { color: var(--light-bg); }
+        .sidebar-item:hover i { color: var(--accent2); transform: scale(1.1) rotate(-5deg); }
+        .sidebar-label { font-weight: 500; color: #f0f2f5; margin-left: 20px; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease 0.1s; }
+        .sidebar:hover .sidebar-label { opacity: 1; transition: opacity 0.3s ease 0.2s; }
+        .sidebar-item.active { background: rgba(0, 201, 167, 0.15); }
+        .sidebar-item.active .sidebar-label, .sidebar-item.active i { color: var(--accent2); }
+
+        .main-content { margin-left: 72px; width: calc(100% - 72px); padding: 30px; z-index: 5; transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .sidebar:hover ~ .main-content { margin-left: 220px; }
+
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .page-title { font-size: 2.1rem; font-weight: 700; background: linear-gradient(90deg, var(--accent1), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .page-subtitle { color: var(--muted); font-size: 1rem; }
+
+        /* --- NEW POST PAGE STYLES --- */
+        .content-area { 
+            background: var(--card-bg); border-radius: 20px;
+            padding: 32px; min-height: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px var(--shadow-color);
+        }
+
+        #groupListContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding-top: 20px;
+        }
+
+        .group-card {
+            background: #f7f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+
+        .group-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+
+        .group-description {
+            font-size: 0.95rem;
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            line-height: 1.5;
+            height: 75px; /* Fixed height for consistency */
+            overflow: hidden;
+        }
+
+        .group-meta {
+            margin-bottom: 15px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--dark-text);
+            font-weight: 500;
+        }
+        .meta-item i { color: var(--accent2); }
+
+        .meta-skills {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .meta-skills strong { color: var(--dark-text); font-weight: 600; margin-right: 5px; }
+
+        .join-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .join-btn:hover {
+            background: var(--accent2);
+            transform: translateY(-1px);
+        }
+        .join-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .already-joined-btn {
+            width: 100%;
+            padding: 10px;
+            background: #4a5568; /* Darker grey to indicate status */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* No Groups Found Style */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            color: var(--muted);
+            margin-top: 30px;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent1);
+        }
+
+        .warning-message {
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red-text);
+            border: 1px solid var(--red-text);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .info-message {
+            padding: 15px;
+            background: rgba(0, 201, 167, 0.1);
+            color: var(--accent2);
+            border: 1px solid var(--accent2);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+
+        @media (max-width: 768px) {
+            .main-content { padding: 20px; }
+            .content-area { padding: 20px; }
+            #groupListContainer { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="your-avatar" id="profileAvatar">
+            <span class="your-initials">AM</span>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="sidebar-item" id="postItem">
+                <i class="fas fa-feather-alt"></i>
+                <span class="sidebar-label">Post</span>
+            </div>
+    
+            <div class="sidebar-item" id="discussRoomItem" style="display: none;">
+                <i class="fas fa-comments"></i>
+                <span class="sidebar-label">Discuss Room</span>
+            </div>
+            
+            <div class="sidebar-item" id="createTeamItem">
+                <i class="fas fa-user-plus"></i>
+                <span class="sidebar-label">Create Team</span>
+            </div>
+    
+            <div class="sidebar-item" id="profileItem">
+                <i class="fas fa-user-circle"></i>
+                <span class="sidebar-label">Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-header">
+            <div>
+                <h1 class="page-title">Find Your Huddle</h1>
+                <p class="page-subtitle">Available projects and teams looking for collaborators.</p>
+            </div>
+        </div>
+        <div class="content-area">
+            <div id="statusMessage" class="warning-message" style="display: none;"></div>
+            
+            <div id="teamStatusMessage" class="info-message" style="display: none;"></div>
+
+            <div id="groupListContainer">
+                </div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-sad-tear"></i>
+                <p>No teams are currently recruiting.<br>Be the first to create one!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Utility Functions (Reused) ---
+        function getInitials(fullName) {
+            if (!fullName) return 'AM';
+            const parts = fullName.split(' ').filter(part => part.length > 0);
+            if (parts.length === 1) {
+                return parts[0][0].toUpperCase();
+            } else if (parts.length >= 2) {
+                return parts[0][0].toUpperCase() + parts[parts.length - 1][0].toUpperCase();
+            }
+            return 'AM';
+        }
+
+        function loadProfileAvatar() {
+            const userDataString = localStorage.getItem('huddleUser');
+            const profileAvatarContainer = document.getElementById('profileAvatar');
+            
+            if(!userDataString) {
+                 window.location.href = 'login.html';
+                 return;
+            }
+            
+            const user = JSON.parse(userDataString);
+            const avatarUrl = user.profilePhotoUrl;
+            
+            profileAvatarContainer.innerHTML = '';
+
+            if (avatarUrl) {
+                const avatarImg = document.createElement('img');
+                avatarImg.src = avatarUrl;
+                avatarImg.alt = "Profile Photo";
+                profileAvatarContainer.appendChild(avatarImg);
+            } else {
+                const initialsSpan = document.createElement('span');
+                initialsSpan.classList.add('your-initials');
+                initialsSpan.textContent = getInitials(user.fullName);
+                profileAvatarContainer.appendChild(initialsSpan);
+            }
+            
+            // Return user status for main logic
+            const teamDataString = localStorage.getItem('currentTeam');
+            return { user: user, hasTeam: !!teamDataString, teamData: teamDataString ? JSON.parse(teamDataString) : null };
+        }
+        
+        // --- Main Rendering Logic ---
+        function renderGroupCard(group, userId, userInTeam, userTeamId) {
+            const isCreator = group.creator_user_id === userId;
+            const isMember = group.members && group.members.includes(userId);
+            const isOtherTeam = userInTeam && (group.groupId !== userTeamId);
+
+            // Extract max size for capacity calculation
+            let maxMembers = 5;
+            const preferredSizeParts = group.preferred_team_size ? group.preferred_team_size.split('-') : ['4-5'];
+            const maxPart = preferredSizeParts.length > 1 ? preferredSizeParts[1] : preferredSizeParts[0].replace('+', '');
+            if (maxPart.match(/^\d+$/)) {
+                maxMembers = parseInt(maxPart, 10);
+            } else if (maxPart.includes('+')) {
+                maxMembers = parseInt(maxPart.replace('+', ''), 10) || 9;
+            }
+
+            const currentMembers = group.members ? group.members.length : 0;
+            const isFull = currentMembers >= maxMembers;
+            
+            // User can only join if they are NOT in a team, NOT the creator, NOT already a member, and the team is NOT full.
+            const canJoin = !userInTeam && !isCreator && !isMember && !isFull;
+            
+            let buttonHTML = '';
+            if (isCreator) {
+                buttonHTML = '<button class="already-joined-btn" disabled><i class="fas fa-crown"></i> You are the Creator</button>';
+            } else if (isMember) {
+                buttonHTML = '<button class="already-joined-btn" disabled><i class="fas fa-check"></i> Already a Member</button>';
+            } else if (userInTeam) {
+                buttonHTML = '<button class="already-joined-btn" disabled><i class="fas fa-users-slash"></i> Leave Your Team to Join</button>';
+            } else if (isFull) {
+                buttonHTML = '<button class="already-joined-btn" disabled><i class="fas fa-times-circle"></i> Team is Full</button>';
+            } else {
+                 buttonHTML = `<button class="join-btn" data-group-id="${group.groupId}">Join Team</button>`;
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'group-card';
+            card.innerHTML = `
+                <h3>${group.project_name}</h3>
+                <p class="group-description">${group.description_objective}</p>
+                <div class="group-meta">
+                    <div class="meta-item"><i class="fas fa-users"></i> Size: ${currentMembers} / ${maxMembers}</div>
+                    <div class="meta-item"><i class="fas fa-clock"></i> Timeline: ${group.project_timeline}</div>
+                    <div class="meta-item"><i class="fas fa-user-tag"></i> Creator: ${group.creator_name || 'N/A'}</div>
+                    <div class="meta-skills"><strong>Skills Needed:</strong> ${group.required_skills.length > 0 ? group.required_skills.join(', ') : 'None specified'}</div>
+                </div>
+                ${buttonHTML}
+            `;
+            
+            const joinBtn = card.querySelector('.join-btn');
+            if(joinBtn) {
+                joinBtn.addEventListener('click', () => handleJoinGroup(joinBtn, group.groupId, group.project_name));
+            }
+            
+            return card;
+        }
+        
+        async function fetchAvailableGroups(userId, hasTeam, teamData) {
+            const container = document.getElementById('groupListContainer');
+            const emptyState = document.getElementById('emptyState');
+            const statusMessage = document.getElementById('statusMessage');
+            const teamStatusMessage = document.getElementById('teamStatusMessage');
+
+            container.innerHTML = '';
+            emptyState.style.display = 'none';
+            statusMessage.style.display = 'none';
+            teamStatusMessage.style.display = 'none';
+
+            // Show status if user is already in a team
+            if (hasTeam) {
+                teamStatusMessage.innerHTML = `You are currently a member of the team: <strong>${teamData.teamName}</strong>. You must leave your current team to join another.`;
+                teamStatusMessage.style.display = 'block';
+            }
+
+            try {
+                // The backend API is designed to return groups the user is NOT a member of.
+                // It should work correctly whether the user has a team or not.
+                const response = await fetch('http://127.0.0.1:5000/get_available_groups', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId }) 
+                });
+                
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (result.groups && result.groups.length > 0) {
+                        result.groups.forEach(group => {
+                            // Pass team status to renderGroupCard for correct button logic
+                            container.appendChild(renderGroupCard(group, userId, hasTeam, teamData ? teamData.groupId : null));
+                        });
+                    } else {
+                        emptyState.style.display = 'block';
+                    }
+                } else {
+                    statusMessage.textContent = `Error loading groups: ${result.error || 'Server error'}`;
+                    statusMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                statusMessage.textContent = '❌ Network Error: Could not connect to the server.';
+                statusMessage.style.display = 'block';
+            }
+        }
+        
+        async function handleJoinGroup(button, groupId, teamName) {
+            const user = JSON.parse(localStorage.getItem('huddleUser'));
+            
+            if (!user || !user.id) {
+                alert('Session expired. Please log in.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // CRITICAL: Double-check if the user is already in a team from localStorage
+            if (localStorage.getItem('currentTeam')) {
+                alert('You are already a member of a team. Please refresh the page and leave your current team before joining a new one.');
+                return;
+            }
+            
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = 'Joining...';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:5000/join_group', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: user.id, group_id: groupId })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(`✅ Successfully joined team: ${teamName}! Redirecting to your team chat...`);
+                    
+                    // Update localStorage with new team data
+                    const newTeamInfo = { 
+                        groupId: groupId, 
+                        teamName: teamName,
+                        projectDescription: 'Joined a team.' 
+                    };
+                    localStorage.setItem('currentTeam', JSON.stringify(newTeamInfo));
+                    
+                    // The user's new team chat is the most logical place to go after joining
+                    window.location.href = 'discuss-room.html';
+                } else {
+                    alert(`❌ Failed to join team: ${result.error || 'Server error'}`);
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Join error:', error);
+                alert('❌ Network Error: Could not connect to the server.');
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+        
+        // --- Navigation and Initialization ---
+        function setupNavigation(hasTeam) {
+            const postItem = document.getElementById('postItem');
+            const discussRoomItem = document.getElementById('discussRoomItem');
+            const createTeamItem = document.getElementById('createTeamItem');
+            const profileItem = document.getElementById('profileItem');
+
+            // Set active link for this page
+            postItem.classList.add('active');
+
+            // Logic remains the same: show Discuss Room / hide Create Team only if user is in a team
+            if (hasTeam) {
+                discussRoomItem.style.display = 'flex';
+                createTeamItem.style.display = 'none';
+            } else {
+                discussRoomItem.style.display = 'none';
+                createTeamItem.style.display = 'flex';
+            }
+            
+            // Add listeners
+            discussRoomItem.addEventListener('click', () => window.location.href = 'discuss-room.html');
+            createTeamItem.addEventListener('click', () => window.location.href = 'group-creationpage.html');
+            profileItem.addEventListener('click', () => window.location.href = 'profile.html');
+            postItem.addEventListener('click', () => window.location.href = 'post-page.html');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const { user, hasTeam, teamData } = loadProfileAvatar();
+            
+            // *** MODIFIED LOGIC: No forced redirect here. ***
+            // The user stays on this page even if they have a team, 
+            // but the UI is updated to reflect their status and options.
+            
+            setupNavigation(hasTeam);
+            fetchAvailableGroups(user.id, hasTeam, teamData);
+        });
+    </script>
+</body>
+</html>

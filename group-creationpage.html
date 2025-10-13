@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Team — The Huddle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --light-bg: #f0f2f5;
+            --dark-text: #2c3e50;
+            --card-bg: #ffffff;
+            --accent1: #005c97;
+            --accent2: #00c9a7;
+            --shadow-color: rgba(0, 92, 151, 0.1);
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-bg);
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #556778;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            background: #f7f9fa;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent1);
+            box-shadow: 0 0 0 3px rgba(0, 92, 151, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px var(--shadow-color);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent1);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--accent2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="mainpage.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Main Page
+        </a>
+        
+        <div class="header">
+            <h1>Create a Team</h1>
+            <p>Start building your dream team for your next project</p>
+        </div>
+
+        <form id="teamForm">
+            <div class="form-group">
+                <label for="teamName">Team Name *</label>
+                <input type="text" id="teamName" name="teamName" placeholder="Enter your team name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="projectDescription">Project Description *</label>
+                <textarea id="projectDescription" name="projectDescription" placeholder="Describe your project goals and what you're looking for in team members" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="teamSize">Preferred Team Size</label>
+                <select id="teamSize" name="teamSize">
+                    <option value="2-3">2-3 members</option>
+                    <option value="4-5" selected>4-5 members</option>
+                    <option value="6-8">6-8 members</option>
+                    <option value="9+">9+ members</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="skillsNeeded">Skills Needed</label>
+                <input type="text" id="skillsNeeded" name="skillsNeeded" placeholder="e.g. Frontend, Backend, Design, Marketing">
+            </div>
+
+            <div class="form-group">
+                <label for="timeline">Project Timeline</label>
+                <select id="timeline" name="timeline">
+                    <option value="1-2 weeks">1-2 weeks</option>
+                    <option value="1 month" selected>1 month</option>
+                    <option value="2-3 months">2-3 months</option>
+                    <option value="6+ months">6+ months</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit-btn">Create Team</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('teamForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.textContent = 'Creating...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+            const teamData = Object.fromEntries(formData.entries());
+            
+            if (!teamData.teamName || !teamData.projectDescription) {
+                alert('Please fill in all required fields.');
+                submitBtn.textContent = 'Create Team';
+                submitBtn.disabled = false;
+                return;
+            }
+
+            // 1. Get the logged-in user's ID
+            const userDataString = localStorage.getItem('huddleUser');
+            if (!userDataString) {
+                alert('User session expired. Please log in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(userDataString);
+            teamData.userId = user.id; // Add user ID to the request payload
+
+            try {
+                // 2. Send data to the unified backend API
+                const response = await fetch('http://127.0.0.1:5000/create_group', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(teamData)
+                });
+                
+                const result = await response.json();
+
+                if (response.ok) { // Success
+                    // 3. Store the team data in local storage to update 'mainpage.html' UI
+                    const newTeamInfo = { 
+                        ...teamData, 
+                        groupId: result.groupId,
+                        // Add team name for display on profile/mainpage
+                        teamName: teamData.teamName 
+                    };
+                    localStorage.setItem('currentTeam', JSON.stringify(newTeamInfo));
+                    
+                    alert(`✅ Team '${teamData.teamName}' created successfully! You will now be redirected.`);
+                    window.location.href = 'mainpage.html';
+                } else { // Failure
+                    alert(`❌ Team Creation Failed: ${result.error}`);
+                }
+
+            } catch (error) {
+                console.error('Group creation error:', error);
+                alert('❌ Network Error: Could not connect to the server.');
+            } finally {
+                submitBtn.textContent = 'Create Team';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Huddle — The Huddle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --light-bg: #f0f2f5; --dark-text: #2c3e50; --card-bg: #ffffff; --accent1: #005c97; --accent2: #00c9a7; --shadow-color: rgba(0, 92, 151, 0.1); --border-color: #e5e7eb; --muted: #8899a6; --red-text: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--light-bg); color: var(--dark-text); min-height: 100vh; display: flex; overflow-x: hidden; }
+        .sidebar { width: 72px; background: var(--card-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 28px 0; z-index: 10; position: fixed; height: 100vh; transition: width 0.3s ease; }
+        .sidebar:hover { width: 220px; }
+        .your-avatar { position: relative; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent1), var(--accent2)); display: flex; align-items: center; justify-content: center; margin-bottom: 30px; cursor: pointer; overflow: hidden; flex-shrink: 0; }
+        .your-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .your-initials { font-size: 1.2rem; font-weight: 600; color: white; }
+        .sidebar-nav { width: 100%; }
+        .sidebar-item { display: flex; align-items: center; width: 100%; height: 52px; cursor: pointer; padding: 0 26px; overflow: hidden; }
+        .sidebar-item i { font-size: 1.2rem; color: var(--muted); transition: color 0.3s ease; }
+        .sidebar-item:hover i { color: var(--accent1); }
+        .sidebar-label { font-weight: 500; color: var(--dark-text); margin-left: 20px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s ease; }
+        .sidebar:hover .sidebar-label { opacity: 1; visibility: visible; transition-delay: 0.1s; }
+        .sidebar-item.active i { color: var(--accent1); }
+        .main-content { margin-left: 72px; width: calc(100% - 72px); padding: 30px; transition: margin-left 0.3s ease; }
+        .sidebar:hover ~ .main-content { margin-left: 220px; }
+        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .page-title { font-size: 2.1rem; font-weight: 700; color: var(--dark-text); }
+        .content-area { background: var(--card-bg); border-radius: 20px; padding: 32px; box-shadow: 0 8px 25px var(--shadow-color); }
+        #groupListContainer { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .group-card { background: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .group-card:hover { transform: translateY(-4px); box-shadow: 0 6px 15px var(--shadow-color); }
+        .group-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .group-description { font-size: 0.9rem; color: #556778; margin-bottom: 15px; line-height: 1.5; height: 63px; overflow: hidden; }
+        .group-meta { border-top: 1px solid var(--border-color); padding-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem; }
+        .meta-item { display: flex; align-items: center; gap: 8px; }
+        .meta-item i { color: var(--accent1); }
+        .meta-skills { grid-column: 1 / -1; }
+        .join-btn, .already-joined-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 15px; }
+        .join-btn { background: var(--accent1); color: white; }
+        .join-btn:hover { background: var(--accent2); }
+        .join-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .already-joined-btn { background: #6b7280; color: white; cursor: not-allowed; }
+        .empty-state { text-align: center; padding: 50px 20px; border: 2px dashed var(--border-color); border-radius: 12px; color: var(--muted); }
+        .info-message, .warning-message { padding: 15px; border-radius: 8px; text-align: center; font-weight: 500; margin-bottom: 20px; }
+        .info-message { background: rgba(0, 201, 167, 0.1); color: var(--accent2); border: 1px solid var(--accent2); }
+        .warning-message { background: rgba(239, 68, 68, 0.1); color: var(--red-text); border: 1px solid var(--red-text); }
+        .right-controls { display: flex; gap: 1rem; }
+        .control-btn { background: transparent; border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; }
+        .control-btn:hover { background: var(--accent1); color: white; border-color: var(--accent1); }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="your-avatar" id="profileAvatar"><span class="your-initials">NA</span></div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-item active" id="findTeamItem" title="Find a Team"><i class="fas fa-users"></i><span class="sidebar-label">Find Team</span></div>
+            <div class="sidebar-item" id="createTeamItem" title="Create a Team"><i class="fas fa-plus-circle"></i><span class="sidebar-label">Create Team</span></div>
+            <div class="sidebar-item" id="discussRoomItem" title="Discuss Room" style="display: none;"><i class="fas fa-comments"></i><span class="sidebar-label">Discuss Room</span></div>
+            <div class="sidebar-item" id="profileItem" title="My Profile"><i class="fas fa-user-circle"></i><span class="sidebar-label">Profile</span></div>
+        </nav>
+    </div>
+
+    <main class="main-content">
+        <header class="content-header">
+            <div>
+                <h1 class="page-title">Find Your Huddle</h1>
+                <p class="page-subtitle">Available projects and teams looking for collaborators.</p>
+            </div>
+            <div class="right-controls">
+                <button class="control-btn" id="notificationBtn" title="Notifications"><i class="fas fa-bell"></i></button>
+                <button class="control-btn" id="logoutBtn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+        <section class="content-area">
+            <div id="statusMessage" class="warning-message" style="display: none;"></div>
+            <div id="teamStatusMessage" class="info-message" style="display: none;"></div>
+            <div id="groupListContainer"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-wind"></i>
+                <p>No teams are currently recruiting.<br>Why not be the first to create one?</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function getInitials(fullName) {
+            if (!fullName) return 'NA';
+            const parts = fullName.split(' ').filter(Boolean);
+            return parts.length > 1 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : (parts[0]?.[0] || 'NA').toUpperCase();
+        }
+
+        function loadProfileAvatar() {
+            const userDataString = localStorage.getItem('huddleUser');
+            if (!userDataString) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            const user = JSON.parse(userDataString);
+            const avatarContainer = document.getElementById('profileAvatar');
+            avatarContainer.innerHTML = user.profilePhotoUrl
+                ? `<img src="${user.profilePhotoUrl}" alt="Profile">`
+                : `<span class="your-initials">${getInitials(user.fullName)}</span>`;
+            
+            const teamDataString = localStorage.getItem('currentTeam');
+            return { user, hasTeam: !!teamDataString, teamData: teamDataString ? JSON.parse(teamDataString) : null };
+        }
+        
+        function renderGroupCard(group, userId, userHasTeam) {
+            const isCreator = group.creator_user_id === userId;
+            const sizeParts = (group.preferred_team_size || '4-5').split('-');
+            const maxMembers = parseInt(sizeParts[sizeParts.length - 1].replace('+', '')) || 5;
+            const currentMembers = group.members?.length || 0;
+            const isFull = currentMembers >= maxMembers;
+
+            let buttonHTML;
+            if (isCreator) {
+                buttonHTML = '<button class="already-joined-btn" disabled>You are the Creator</button>';
+            } else if (userHasTeam) {
+                buttonHTML = '<button class="already-joined-btn" disabled>Leave Your Team to Join</button>';
+            } else if (isFull) {
+                buttonHTML = '<button class="already-joined-btn" disabled>Team is Full</button>';
+            } else {
+                buttonHTML = `<button class="join-btn" data-group-id="${group.groupId}" data-team-name="${group.teamName}">Join Team</button>`;
+            }
+
+            return `
+                <div class="group-card">
+                    <h3>${group.teamName}</h3>
+                    <p class="group-description">${group.projectDescription}</p>
+                    <div class="group-meta">
+                        <div class="meta-item"><i class="fas fa-users"></i> ${currentMembers} / ${maxMembers}</div>
+                        <div class="meta-item"><i class="fas fa-clock"></i> ${group.project_timeline}</div>
+                        <div class="meta-item" style="grid-column: 1 / -1;"><i class="fas fa-user-tag"></i> Creator: ${group.creator_name || 'N/A'}</div>
+                        <div class="meta-skills"><strong>Skills:</strong> ${group.required_skills?.join(', ') || 'General'}</div>
+                    </div>
+                    ${buttonHTML}
+                </div>
+            `;
+        }
+        
+        async function fetchAvailableGroups(userId, hasTeam, teamData) {
+            const container = document.getElementById('groupListContainer');
+            const teamStatusMsg = document.getElementById('teamStatusMessage');
+            
+            if (hasTeam) {
+                teamStatusMsg.innerHTML = `You are in team: <strong>${teamData.teamName}</strong>. You must leave it to join another.`;
+                teamStatusMsg.style.display = 'block';
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get_available_groups', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId }) 
+                });
+                const result = await response.json();
+                if (response.ok && result.groups?.length > 0) {
+                    container.innerHTML = result.groups.map(group => renderGroupCard(group, userId, hasTeam)).join('');
+                } else {
+                    document.getElementById('emptyState').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('statusMessage').textContent = '❌ Network Error. Could not load teams.';
+                document.getElementById('statusMessage').style.display = 'block';
+            }
+        }
+        
+        async function handleJoinGroup(button) {
+            // CORRECTED: Client-side check before making a request.
+            if (localStorage.getItem('currentTeam')) {
+                alert('❌ You are already in a team. Please leave your current team before joining another.');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('huddleUser'));
+            const groupId = button.dataset.groupId;
+            const teamName = button.dataset.teamName;
+            
+            button.disabled = true;
+            button.textContent = 'Joining...';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:5000/join_group', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: user.id, group_id: groupId })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`✅ Successfully joined team: ${teamName}!`);
+                    localStorage.setItem('currentTeam', JSON.stringify({ groupId, teamName }));
+                    window.location.href = 'discuss-room.html';
+                } else {
+                    alert(`❌ Failed to join team: ${result.error}`);
+                    button.disabled = false;
+                    button.textContent = 'Join Team';
+                }
+            } catch (error) {
+                alert('❌ Network Error: Could not connect to the server.');
+                button.disabled = false;
+                button.textContent = 'Join Team';
+            }
+        }
+        
+        function setupNavigation(hasTeam) {
+            document.getElementById('discussRoomItem').style.display = hasTeam ? 'flex' : 'none';
+            document.getElementById('createTeamItem').style.display = hasTeam ? 'none' : 'flex';
+            
+            document.getElementById('findTeamItem').addEventListener('click', () => window.location.href = 'mainpage.html');
+            document.getElementById('createTeamItem').addEventListener('click', () => window.location.href = 'group-creation.html');
+            document.getElementById('profileItem').addEventListener('click', () => window.location.href = 'profile.html');
+            document.getElementById('discussRoomItem').addEventListener('click', () => window.location.href = 'discuss-room.html');
+            document.getElementById('notificationBtn').addEventListener('click', () => window.location.href = 'notification.html');
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const session = loadProfileAvatar();
+            if (session) {
+                setupNavigation(session.hasTeam);
+                fetchAvailableGroups(session.user.id, session.hasTeam, session.teamData);
+
+                document.getElementById('groupListContainer').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('join-btn')) {
+                        handleJoinGroup(e.target);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

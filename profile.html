@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --light-bg: #f0f2f5; --dark-text: #2c3e50; --card-bg: #ffffff; --accent1: #005c97; --accent2: #00c9a7; --shadow-color: rgba(0, 92, 151, 0.1); --border-color: #e5e7eb; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--light-bg); color: #556778; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 2rem 1rem; }
+        .container { width: 100%; max-width: 1000px; background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 8px 32px 0 var(--shadow-color); border: 1px solid var(--border-color); overflow: hidden; margin: 2rem 0; }
+        .header-bar { background: linear-gradient(90deg, var(--accent1), var(--accent2)); height: 8px; }
+        .avatar-container { position: relative; flex-shrink: 0; width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--accent1), var(--accent2)); border: 4px solid white; overflow: hidden; }
+        .avatar-container img, .avatar-initials { width: 100%; height: 100%; object-fit: cover; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 600; color: white; }
+        .edit-photo-btn { position: absolute; bottom: 5px; right: 5px; background-color: rgba(0, 0, 0, 0.6); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.3s ease; border: 2px solid white; }
+        .avatar-container:hover .edit-photo-btn { opacity: 1; }
+        .profile-header { display: flex; flex-wrap: wrap; padding: 2rem; gap: 2rem; align-items: center; }
+        .user-info { flex: 1; min-width: 300px; }
+        .user-name { font-size: 2.2rem; font-weight: 700; color: var(--dark-text); margin-bottom: 0.5rem; }
+        .user-role { font-size: 1.1rem; }
+        .user-details { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1.5rem; }
+        .detail-item { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.3rem; display: flex; align-items: center; }
+        .individual-edit-btn { background: rgba(0, 92, 151, 0.1); color: var(--accent1); border: none; padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-left: 10px; }
+        .profile-section { padding: 0 2rem 2rem; }
+        .section-header { margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+        .section-title { font-size: 1.5rem; font-weight: 600; color: var(--dark-text); }
+        .profile-content { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .info-card { background: #f9fafb; border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border-color); }
+        .info-card h3 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent1); }
+        .info-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .info-item { display: flex; justify-content: space-between; }
+        .info-label { color: #9ca3af; }
+        .info-value { font-weight: 500; text-align: right; max-width: 60%; }
+        .info-value-block { display: block; margin-top: 0.5rem; text-align: left; }
+        .social-links { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+        .social-link { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+        .social-link-url { color: var(--accent1); font-weight: 500; }
+        .team-card { background: rgba(0, 92, 151, 0.05); border-radius: 8px; padding: 1.5rem; }
+        .team-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+        .team-title { font-size: 1.2rem; font-weight: 600; }
+        #noTeamCard { text-align: center; padding: 2rem; border: 1px dashed #9ca3af; color: #9ca3af; }
+        .action-btn { background: rgba(0, 92, 151, 0.1); color: var(--accent1); border: 1px solid rgba(0, 92, 151, 0.2); padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .action-btn:hover { background: rgba(0, 92, 151, 0.2); }
+        @media (max-width: 768px) { .profile-content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar"></div>
+        <div style="display:flex; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; border-bottom: 1px solid var(--border-color);">
+            <div style="font-weight:700;">My Profile</div>
+            <button class="action-btn" id="homeBtn"><i class="fas fa-home"></i> Back to Main</button>
+        </div>
+        
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img id="profilePhoto" src="" alt="Profile" style="display:none;">
+                <div class="avatar-initials" id="avatarInitials">AM</div>
+                <label for="photoUpload" class="edit-photo-btn"><i class="fas fa-camera"></i></label>
+                <input type="file" id="photoUpload" accept=".jpg, .jpeg, .png" style="display: none;">
+            </div>
+            <div class="user-info">
+                <h1 class="user-name" id="userName">User Name</h1>
+                <div class="user-role" id="userRole">Student</div>
+                <div class="user-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Bio <button class="individual-edit-btn" data-target="bio"><i class="fas fa-edit"></i></button></span>
+                        <span class="detail-value" id="bioValue">...</span>
+                    </div>
+                    <div class="detail-item"><span class="detail-label">Academic Year</span><span id="academicYearValue">...</span></div>
+                    <div class="detail-item"><span class="detail-label">Branch</span><span id="branchValue">...</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <div class="section-header"><h2 class="section-title">Profile Information</h2></div>
+            <div class="profile-content">
+                <div class="info-card">
+                    <h3><i class="fas fa-id-card"></i> Personal Details</h3>
+                    <div class="info-list">
+                        <div class="info-item"><span class="info-label">Full Name</span><span class="info-value" id="fullNameValue">...</span></div>
+                        <div class="info-item"><span class="info-label">Email</span><span class="info-value" id="emailValue">...</span></div>
+                        <div class="info-item"><span class="info-label">Phone <button class="individual-edit-btn" data-target="phone"><i class="fas fa-edit"></i></button></span><span class="info-value" id="phoneValue">...</span></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-lightbulb"></i> Skills & Interests</h3>
+                    <div class="info-list">
+                        <div class="info-item" style="display: block;"><span class="info-label">Skills (Read Only)</span><span class="info-value info-value-block" id="skillsValue">...</span></div>
+                        <div class="info-item" style="display: block; margin-top: 1rem;"><span class="info-label">Interests <button class="individual-edit-btn" data-target="interests"><i class="fas fa-edit"></i></button></span><span class="info-value info-value-block" id="interestsValue">...</span></div>
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div class="social-links">
+                        <div class="social-link"><i class="fab fa-linkedin"></i><a class="social-link-url" id="linkedinURL" href="#">Add Link</a><button class="individual-edit-btn" data-target="linkedin"><i class="fas fa-edit"></i></button></div>
+                        <div class="social-link"><i class="fab fa-github"></i><a class="social-link-url" id="githubURL" href="#">Add Link</a><button class="individual-edit-btn" data-target="github"><i class="fas fa-edit"></i></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <div class="section-header"><h2 class="section-title">Team Affiliation</h2></div>
+            <div id="teamAffiliationContainer">
+                <div class="team-card" id="currentTeamCard" style="display: none;">
+                    <div class="team-header"><h3 class="team-title" id="teamNameValue">...</h3></div>
+                    <p id="teamDescriptionValue">...</p>
+                </div>
+                <div id="noTeamCard" style="display: block;">You are not affiliated with any team.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('homeBtn').addEventListener('click', () => window.location.href = 'mainpage.html');
+        
+        function getInitials(name) {
+            if (!name) return 'NA';
+            const parts = name.split(' ').filter(Boolean);
+            return parts.length > 1 ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase() : (parts[0]?.[0] || 'NA').toUpperCase();
+        }
+
+        function loadUserProfile() {
+            const user = JSON.parse(localStorage.getItem('huddleUser'));
+            if (!user) { window.location.href = 'login.html'; return; }
+
+            const photoEl = document.getElementById('profilePhoto');
+            const initialsEl = document.getElementById('avatarInitials');
+            if (user.profilePhotoUrl) {
+                photoEl.src = user.profilePhotoUrl;
+                photoEl.style.display = 'block';
+                initialsEl.style.display = 'none';
+            } else {
+                initialsEl.textContent = getInitials(user.fullName);
+                initialsEl.style.display = 'flex';
+                photoEl.style.display = 'none';
+            }
+
+            document.getElementById('userName').textContent = user.fullName || 'N/A';
+            document.getElementById('userRole').textContent = `${user.department || 'General'} Student`;
+            document.getElementById('bioValue').textContent = user.bio || 'No bio provided.';
+            const yearSuffix = { '1': 'st', '2': 'nd', '3': 'rd' };
+            document.getElementById('academicYearValue').textContent = `${user.year_of_study}${yearSuffix[user.year_of_study] || 'th'} Year`;
+            document.getElementById('branchValue').textContent = user.department || 'N/A';
+            document.getElementById('fullNameValue').textContent = user.fullName || 'N/A';
+            document.getElementById('emailValue').textContent = user.email || 'N/A';
+            document.getElementById('phoneValue').textContent = user.phone || 'Not Provided';
+            document.getElementById('skillsValue').textContent = user.skills?.join(', ') || 'No skills listed.';
+            document.getElementById('interestsValue').textContent = Array.isArray(user.interests) ? user.interests.join(', ') : (user.interests || 'No interests listed.');
+            
+            ['linkedin', 'github'].forEach(platform => {
+                const el = document.getElementById(`${platform}URL`);
+                const val = user[platform];
+                if (val && val !== 'Add Link') {
+                    el.textContent = val;
+                    el.href = val.startsWith('http') ? val : `https://${val}`;
+                    el.target = '_blank';
+                }
+            });
+
+            const team = JSON.parse(localStorage.getItem('currentTeam'));
+            if (team) {
+                document.getElementById('teamNameValue').textContent = team.teamName;
+                document.getElementById('teamDescriptionValue').textContent = team.projectDescription;
+                document.getElementById('currentTeamCard').style.display = 'block';
+                document.getElementById('noTeamCard').style.display = 'none';
+            }
+        }
+
+        async function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file || file.size > 1024 * 1024) {
+                alert('Please select a PNG or JPG image under 1MB.');
+                return;
+            }
+            alert('Uploading photo... Please wait.');
+            const user = JSON.parse(localStorage.getItem('huddleUser'));
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Image = reader.result;
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/upload_profile_photo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: user.id, photo_b64: base64Image })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error);
+
+                    alert('✅ Profile photo updated! Refreshing...');
+                    user.profilePhotoUrl = result.photo_url;
+                    localStorage.setItem('huddleUser', JSON.stringify(user));
+                    // CORRECTED: Redirect to mainpage to refresh sidebar avatar
+                    window.location.href = 'mainpage.html';
+                } catch (error) {
+                    alert(`❌ Error: ${error.message}`);
+                }
+            };
+        }
+
+        document.querySelectorAll('.individual-edit-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const target = button.dataset.target;
+                const user = JSON.parse(localStorage.getItem('huddleUser'));
+                const currentValue = user[target] || '';
+                const newValue = prompt(`Enter new value for ${target}:`, currentValue);
+
+                if (newValue !== null && newValue.trim() !== currentValue) {
+                    const updateData = { [target]: target === 'interests' ? newValue.split(',').map(s => s.trim()) : newValue.trim() };
+                    try {
+                        const response = await fetch('http://127.0.0.1:5000/update_profile', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: user.id, updates: updateData })
+                        });
+                        if (!response.ok) throw new Error('Failed to update.');
+
+                        user[target] = updateData[target];
+                        localStorage.setItem('huddleUser', JSON.stringify(user));
+                        loadUserProfile();
+                        alert(`✅ ${target} updated successfully!`);
+                    } catch (error) {
+                        alert(`❌ Error: ${error.message}`);
+                    }
+                }
+            });
+        });
+
+        document.getElementById('photoUpload').addEventListener('change', handlePhotoUpload);
+        document.addEventListener('DOMContentLoaded', loadUserProfile);
+    </script>
+</body>
+</html>

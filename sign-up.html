@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huddle — Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        :root { --light-bg: #f0f2f5; --dark-text: #2c3e50; --card-bg: #ffffff; --accent1: #005c97; --accent2: #00c9a7; --shadow-color: rgba(0, 92, 151, 0.1); }
+        body { background: var(--light-bg); overflow: hidden; position: relative; height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--dark-text); }
+        #hero-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .signup-panel { width: 90%; max-width: 420px; background: var(--card-bg); border-radius: 20px; padding: 32px; box-shadow: 0 15px 40px var(--shadow-color); border: 1px solid #e0e0e0; z-index: 10; }
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 1.8rem; font-weight: 700; background: linear-gradient(to right, var(--accent1), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px 12px 45px; background: #f7f7f9; border: 1px solid #ddd; border-radius: 12px; color: var(--dark-text); font-size: 1rem; outline: none; transition: all 0.3s ease; -webkit-appearance: none; appearance: none; }
+        .form-group select { background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23aaa%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: .65em auto; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent1); box-shadow: 0 0 0 3px rgba(0, 92, 151, 0.2); }
+        .submit-btn { width: 100%; padding: 14px; background: linear-gradient(to right, var(--accent1), var(--accent2)); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 148, 167, 0.4); }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .login-link { text-align: center; margin-top: 20px; color: #556778; font-size: 0.87rem; }
+        .login-link a { color: var(--accent1); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="hero-canvas"></div>
+    <div class="signup-panel">
+        <div class="header"><h1>Create Your Huddle Account</h1></div>
+        <form id="signupForm">
+            <div class="form-group"><i class="fas fa-user"></i><input type="text" name="fullName" placeholder="Full Name" required></div>
+            <div class="form-group"><i class="fas fa-envelope"></i><input type="email" name="email" placeholder="Email Address" required></div>
+            <div class="form-group"><i class="fas fa-lock"></i><input type="password" name="password" placeholder="Password" required></div>
+            <div class="form-group"><i class="fas fa-graduation-cap"></i>
+                <select name="branch" required>
+                    <option value="" disabled selected>Select Your Branch</option>
+                    <option value="AI & Machine Learning">AI & Machine Learning</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics & Comm.">Electronics & Comm.</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group"><i class="fas fa-calendar-alt"></i>
+                <select name="academicYear" required>
+                    <option value="" disabled selected>Select Academic Year</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn" id="signupBtn">Sign Up</button>
+        </form>
+        <div class="login-link">Already have an account? <a href="login.html">Log In</a></div>
+    </div>
+    
+    <script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.178.0/build/three.module.js" } }</script>
+    <script type="module">
+        import * as THREE from 'three';
+        // --- Background Particle Animation ---
+        const container = document.getElementById('hero-canvas');
+        if (container) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            camera.position.z = 5;
+            const particlesGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(5000 * 3);
+            for (let i = 0; i < 5000 * 3; i++) { positions[i] = (Math.random() - 0.5) * 20; }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particles = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ color: 0x005c97, size: 0.02, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
+            scene.add(particles);
+            const animate = () => { requestAnimationFrame(animate); particles.rotation.y = Date.now() * 0.00015; renderer.render(scene, camera); };
+            animate();
+        }
+
+        // --- Signup Form Handler ---
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const signupBtn = document.getElementById('signupBtn');
+            signupBtn.disabled = true;
+            signupBtn.textContent = 'Creating Account...';
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`✅ Success! ${result.message}\nPlease log in with your new account.`);
+                    window.location.href = 'login.html';
+                } else {
+                    alert(`❌ Signup Failed: ${result.error}`);
+                }
+            } catch (error) {
+                alert('❌ Network Error: Could not connect to the server.');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.textContent = 'Sign Up';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The Huddle — We Craft Connections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --light-bg: #f0f2f5; --dark-text: #2c3e50; --card-bg: #ffffff; --accent1: #005c97; --accent2: #00c9a7; --shadow-color: rgba(0, 92, 151, 0.1); }
+        body { font-family: 'Inter', sans-serif; background: var(--light-bg); color: var(--dark-text); overflow-x: hidden; }
+        h1, h2, h3 { text-wrap: balance; }
+        main { width: 100%; position: relative; z-index: 1; }
+        section { padding: 8rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; }
+        h2 { font-weight: 800; font-size: 3.5rem; margin-bottom: 1.5rem; color: var(--dark-text); }
+        p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 2rem; line-height: 1.6; color: #556778; }
+        .reveal-up { opacity: 0; transform: translateY(60px); visibility: hidden; }
+        header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--dark-text); text-decoration: none; }
+        .auth-buttons { display: flex; gap: 1rem; align-items: center; }
+        .auth-btn { padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.3s ease; border: 1px solid var(--accent1); }
+        .auth-btn.login { color: var(--accent1); background: transparent; }
+        .auth-btn.register { color: white; background: var(--accent1); }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow-color); }
+        .auth-btn.login:hover { background: var(--accent1); color: white; }
+        .auth-btn.register:hover { background: var(--accent2); border-color: var(--accent2); }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 150px; }
+        .hero h1 { font-size: 4.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(90deg, var(--accent1) 0%, var(--accent2) 50%, var(--accent1) 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-shift 4s linear infinite; }
+        @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: -200% center; } }
+        .hero p { font-size: 1.3rem; max-width: 600px; }
+        #hero-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .highlight { background: linear-gradient(135deg, var(--accent1), var(--accent2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .impact-section { background: #e8eaed; }
+        .impact-title { background: linear-gradient(90deg, var(--accent1), var(--accent2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .card-item { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: left; }
+        .card-item:hover { transform: translateY(-8px); box-shadow: 0 10px 30px var(--shadow-color); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent1); }
+        .final-call { padding: 6rem 2rem; display: flex; justify-content: center; align-items: center; background: transparent; }
+        .cta-card { position: relative; max-width: 600px; width: 100%; background: #ffffff; border-radius: 20px; padding: 3rem 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); text-align: center; overflow: hidden; }
+        .cta-card h2 { font-size: 2.2rem; color: #1e293b; margin-bottom: 1rem; }
+        .cta-card p { font-size: 1rem; color: #64748b; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .cta-btn { background: linear-gradient(90deg, #1d4ed8, #059669); color: white; padding: 0.8rem 1.8rem; border: none; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
+        .cta-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 7px 20px rgba(37, 99, 235, 0.4); }
+        footer { padding: 4rem 2rem 2rem; background: #e8eaed; text-align: center; }
+        @media (max-width: 768px) { h1, h2 { font-size: 2.8rem; } .cta-card { padding: 2rem 1.5rem; } .cta-card h2 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+    <div id="hero-canvas"></div>
+    <header>
+        <nav role="navigation" aria-label="Primary">
+            <a href="frontpage.html" class="logo" aria-current="page">The Huddle</a>
+        </nav>
+        <div class="auth-buttons" role="navigation" aria-label="Secondary">
+            <a href="#about" class="auth-btn login">About</a>
+            <a href="login.html" class="auth-btn login">Login</a>
+            <a href="sign-up.html" class="auth-btn register">Register</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="reveal-up">The Future of Collaboration is Coming.</h1>
+            <p class="reveal-up">We're building Huddle, an intuitive and powerful hub designed to connect you with the perfect collaborators. Get ready to create, innovate, and achieve more, together.</p>
+        </section>
+
+        <section class="meaning">
+            <h2 class="reveal-up">We Don’t Match Profiles.<br><span class="highlight">We Craft Connections.</span></h2>
+        </section>
+
+        <section class="impact-section">
+            <h2 class="reveal-up impact-title">Drive Real Impact.</h2>
+        </section>
+
+        <section id="about" class="why-huddle">
+            <h2 class="reveal-up">Why Huddle?</h2>
+            <div class="cards-container reveal-up">
+                <div class="card-item"><div class="card-icon">🔒</div><h3>Trust First</h3><p>Your safety and privacy come first. Verified profiles and community-driven moderation.</p></div>
+                <div class="card-item"><div class="card-icon">💡</div><h3>Ideas Ignite Here</h3><p>Our tools help you turn raw ideas into structured, executable projects.</p></div>
+                <div class="card-item"><div class="card-icon">🚀</div><h3>Build Legacies</h3><p>We measure success by the impact you create. Your next big thing starts here.</p></div>
+            </div>
+        </section>
+        
+        <section class="final-call">
+            <div class="cta-card reveal-up">
+                <h2>Great Idea, No Team?</h2>
+                <p>Don’t let a lack of collaborators stop you from building something amazing. The Huddle is the dedicated platform for connecting innovators for hackathons and projects. <strong>Building together starts here.</strong></p>
+                <button class="cta-btn" onclick="window.location.href='sign-up.html'">Sign up and stop hacking solo</button>
+            </div>
+        </section>
+        
+        <footer><p>© 2025 The Huddle. All Rights Reserved. · <a href="#about">About</a></p></footer>
+    </main>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.178.0/build/three.module.js" } }</script>
+    <script type="module">
+        import * as THREE from 'three';
+        gsap.utils.toArray(".reveal-up").forEach(el => {
+            gsap.fromTo(el, { opacity: 0, y: 60, visibility: "hidden" }, { opacity: 1, y: 0, visibility: "visible", duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" } });
+        });
+        const container = document.getElementById('hero-canvas');
+        if (container) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            camera.position.z = 5;
+            const particlesGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(5000 * 3);
+            for (let i = 0; i < 5000 * 3; i++) { positions[i] = (Math.random() - 0.5) * 20; }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particles = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ color: 0x005c97, size: 0.02, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false }));
+            scene.add(particles);
+            const animate = () => { requestAnimationFrame(animate); particles.rotation.y = Date.now() * 0.00015; renderer.render(scene, camera); };
+            animate();
+            window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+        }
+    </script>
+</body>
+</html>
